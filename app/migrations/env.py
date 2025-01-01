@@ -6,6 +6,7 @@ from sqlalchemy import pool
 from alembic import context
 
 from models.user import User
+from models.todo import ToDo
 from models.engine import SQLALCHEMY_DATABASE_URL
 from models.user import Base
 # this is the Alembic Config object, which provides
