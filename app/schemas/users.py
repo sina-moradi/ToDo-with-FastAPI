@@ -6,3 +6,10 @@ class RegisterInput(BaseModel):
     password: str
 
 
+class UpdateInput(BaseModel):
+    username: str
+
+
+class RetrieveUser(BaseModel):
+    username: str
+    id: int

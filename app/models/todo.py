@@ -21,4 +21,3 @@ class ToDo(Base):
     title: Mapped[str] = mapped_column(nullable=False)
     detail: Mapped[str] = mapped_column(nullable=True)
     user_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
-    owner: Mapped[User] = relationship("User", back_populates="todo`s")
