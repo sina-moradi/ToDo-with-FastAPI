@@ -5,21 +5,24 @@ from sqlalchemy.orm import Session
 from models.engine import get_db
 from schemas.users import RegisterInput, UpdateInput, RetrieveUser
 from models.user import User
+from utils.secret import pwd_context
+
 
 router = APIRouter()
 
 
-@router.post('/register')
+@router.post('/register', response_model=RetrieveUser)
 def register(data: RegisterInput, db: Session = Depends(get_db)):
     db_user = db.query(User).filter(User.username == data.username).first()
     if db_user:
         raise HTTPException(status_code=400, detail='username is already exist')
-    else:
-        user = User(username=data.username, password=data.password)
-        db.add(user)
-        db.commit()
-        db.refresh(user)
-        return user
+
+    user_pass = pwd_context.hash(data.password)
+    user = User(username=data.username, password=user_pass)
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return user
 
 
 @router.put("/{user_id}", response_model=RetrieveUser)
