@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 
-class RegisterInput(BaseModel):
+class UserInput(BaseModel):
     username: str
     password: str
 
@@ -13,3 +13,8 @@ class UpdateInput(BaseModel):
 class RetrieveUser(BaseModel):
     username: str
     id: int
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
