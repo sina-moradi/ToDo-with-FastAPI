@@ -53,7 +53,6 @@ credentials_exception = HTTPException(
 def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
 
     try:
-        print('execute')
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload.get("sub")
         if username is None:
@@ -62,6 +61,7 @@ def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     except InvalidTokenError:
         raise credentials_exception
     user = sa.select(User).where(User.username == token_data.username)
+    print(user)
     if user is None:
         raise credentials_exception
     return user

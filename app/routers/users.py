@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from datetime import timedelta
 
 from models.engine import get_db
-from schemas.users import UserInput, UpdateInput, RetrieveUser, Token
+from schemas.users import UserInput, UpdateInput, RetrieveUser, Token, UserList
 from models.user import User
 from utils.secret import pwd_context
 from utils.jwt_handle import create_access_token, authenticate_user,\
@@ -27,8 +27,15 @@ def register(data: UserInput, db: Session = Depends(get_db)):
     return user
 
 
+@router.get('/', response_model=UserList)
+def user_list(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    users = db.query(User).all()
+    return {"users": users}
+
+
 @router.put("/{user_id}", response_model=RetrieveUser)
-def update_username(user_id: int, data: UpdateInput, db: Session = Depends(get_db)):
+def update_username(user_id: int, data: UpdateInput, db: Session = Depends(get_db),
+                    current_user: User = Depends(get_current_user)):
     db_user = db.query(User).filter(User.id == user_id).first()
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
