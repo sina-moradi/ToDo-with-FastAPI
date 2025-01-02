@@ -3,8 +3,8 @@ from fastapi import Depends, HTTPException, status
 from dotenv import load_dotenv
 from fastapi.security import OAuth2PasswordBearer
 from jwt.exceptions import InvalidTokenError
-import sqlalchemy as sa
 
+from sqlalchemy.orm import Session
 import jwt
 import os
 from typing_extensions import Annotated
@@ -21,6 +21,13 @@ load_dotenv()
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+
+def get_user(username, db:Session = next(get_db())):
+    db_user = db.query(User).filter(User.username == username).first()
+    if db_user:
+        return db_user
+    return HTTPException(status_code=404, detail='user is not exist')
 
 
 def authenticate_user(username: str, password: str, db):
@@ -60,8 +67,7 @@ def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
         token_data = UpdateInput(username=username)
     except InvalidTokenError:
         raise credentials_exception
-    user = sa.select(User).where(User.username == token_data.username)
-    print(user)
+    user = get_user(token_data.username)
     if user is None:
         raise credentials_exception
     return user

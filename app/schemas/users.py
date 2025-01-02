@@ -24,9 +24,6 @@ class RetrieveUser(BaseModel):
     username: str
     id: int
 
-    class Config:
-        orm_mode = True
-
 
 class Token(BaseModel):
     access_token: str
